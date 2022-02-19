@@ -1,14 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('index');
 });
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::get('/login', [AuthController::class, 'loginView'])->name('login');
+Route::get('/register', [AuthController::class, 'registerView']);
 
 Route::group(['middleware' => 'auth', 'prefix' => 'admin'], function () {
 
