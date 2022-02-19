@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -36,6 +37,28 @@ class AuthController extends Controller
      * @param Request $request
      * @return Application|RedirectResponse|Redirector
      */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt([
+            'email' => $request->input('email'),
+            'password' => $request->input('password'),
+        ], $request->input('remember'))) {
+            Session::regenerate();
+            return redirect(route('admin.index'));
+        }
+
+        return redirect()->back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+    }
+
+    /**
+     * @param Request $request
+     * @return Application|RedirectResponse|Redirector
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -43,11 +66,13 @@ class AuthController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'confirmed', 'min:6', 'max:100'],
         ]);
+
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
         ]);
+
         Auth::login($user);
         return redirect(route('admin.index'));
     }
