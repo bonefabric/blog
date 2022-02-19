@@ -52,4 +52,13 @@ class AuthController extends Controller
         return redirect(route('admin.index'));
     }
 
+    /**
+     * @return Application|RedirectResponse|Redirector
+     */
+    public function logout()
+    {
+        Auth::logout();
+        return redirect(route('home'));
+    }
+
 }
