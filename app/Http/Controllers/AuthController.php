@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -26,14 +25,6 @@ class AuthController extends Controller
     }
 
     /**
-     * @return Application|Factory|View
-     */
-    public function registerView()
-    {
-        return view('register');
-    }
-
-    /**
      * @param Request $request
      * @return Application|RedirectResponse|Redirector
      */
@@ -44,15 +35,20 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt([
-            'email' => $request->input('email'),
-            'password' => $request->input('password'),
-        ], $request->input('remember'))) {
+        if (Auth::attempt($request->only(['email', 'password']), $request->input('remember'))) {
             Session::regenerate();
             return redirect(route('admin.index'));
         }
 
         return redirect()->back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+    }
+
+    /**
+     * @return Application|Factory|View
+     */
+    public function registerView()
+    {
+        return view('register');
     }
 
     /**
