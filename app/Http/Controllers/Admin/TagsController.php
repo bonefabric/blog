@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Tag;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -12,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Throwable;
 
-class TagsController extends Controller
+class TagsController extends AdminController
 {
 
     /**

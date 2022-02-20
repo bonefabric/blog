@@ -15,6 +15,6 @@
                 <a class="nav-link{{ str_starts_with(Route::currentRouteName(), 'admin.tags') ? ' active' : '' }}" href="{{ url('admin/tags') }}">Tags</a>
             </li>
         </ul>
-        [username]
+        {{ Auth::check() ? Auth::user()->name : '[username]' }}
     </div>
 </nav>
