@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\TagsController;
+use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,9 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::resource('posts', PostsController::class);
         Route::resource('tags', TagsController::class);
+
+        Route::get('users', [UsersController::class, 'index'])->name('users');
+        Route::put('users/{id}', [UsersController::class, 'ban'])->name('users.ban');
 
     });
 
