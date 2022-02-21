@@ -1,37 +1,41 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<style>
-    form {
-        display: flex;
-        flex-direction: column;
-        width: 300px;
-        margin-top: 200px;
-        margin-left: 50%;
-        transform: translateX(-50%);
-    }
-</style>
-<body>
-<form action="{{ url('/login') }}" method="post">
-    @csrf
-    <input type="email" name="email" placeholder="E-mail"/>
-    <input type="password" name="password" placeholder="Password"/>
-    <label>
-        Remember:
-        <input type="checkbox" name="remember">
-    </label>
-    <input type="submit">
+@extends('templates.main')
 
-    @foreach($errors->all() as $error)
-        <p>{{ $error }}</p>
-    @endforeach
-</form>
+@section('header')
+    @include('templates.header')
+@endsection
 
-</body>
-</html>
+@section('body')
+    <div class="row mt-5">
+        <div class="col-6 offset-3">
+            <form action="{{ url('/login') }}" method="post">
+                @csrf
+                <div class="mb-3">
+                    <label for="inputEmail" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" name="email">
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="inputPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="inputPassword" name="password">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="inputRemember" name="remember">
+                    <label class="form-check-label" for="inputRemember">Remember me</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+    @if($errors->any())
+        <div class="row mt-5">
+            <div class="col-8 offset-2">
+                @foreach($errors->all() as $error)
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ $error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+@endsection
