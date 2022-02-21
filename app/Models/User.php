@@ -69,4 +69,13 @@ class User extends Authenticatable
     {
         return (bool)$this->attributes['banned'];
     }
+
+    /**
+     * @return void
+     */
+    public function comments(): void
+    {
+        $this->belongsToMany(Comment::class);
+    }
+
 }
