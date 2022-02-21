@@ -5,9 +5,11 @@
 @endsection
 
 @section('body')
-    <p>
-        <a href="{{ route('admin.tags.edit', $tag->id) }}">Edit</a>
-    </p>
+    <form action="{{ route('admin.tags.edit', $tag->id) }}" method="post" class="mt-3 mb-3">
+        @csrf
+        @method('GET')
+        <button class="btn btn-primary" type="submit">Edit</button>
+    </form>
     <p>ID: {{ $tag->id }}</p>
     <p>Name: {{ $tag->name }}</p>
     <p>Created at: {{ $tag->created_at ?? '???' }}</p>

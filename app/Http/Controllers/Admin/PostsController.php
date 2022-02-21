@@ -140,7 +140,7 @@ class PostsController extends AdminController
         if ($request->input('permanently')) {
             $post->tags()->detach($post->tags()->allRelatedIds()->all());
             $post->forceDelete();
-        } else if ($post->trashed()) {
+        } elseif ($post->trashed()) {
             $post->restore();
         } else {
             $post->delete();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Tag;
@@ -9,7 +11,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
-use Throwable;
 
 class TagsController extends AdminController
 {
@@ -19,7 +20,12 @@ class TagsController extends AdminController
      */
     public function index()
     {
-        return view('admin.tags.index')->with('tags', Tag::all());
+        return view('admin.tags.index')
+            ->with('tags', Tag::select(['id', 'name', 'deleted_at'])
+                ->withTrashed()
+                ->orderBy('deleted_at')
+                ->orderBy('updated_at', 'desc')
+                ->get());
     }
 
     /**
@@ -58,9 +64,7 @@ class TagsController extends AdminController
      */
     public function edit(int $id)
     {
-        $tag = Tag::findOrFail($id);
-        return view('admin.tags.edit')->with('tag', $tag);
-
+        return view('admin.tags.edit')->with('tag', Tag::findOrFail($id));
     }
 
     /**
@@ -81,12 +85,23 @@ class TagsController extends AdminController
 
     /**
      * @param int $id
+     * @param Request $request
      * @return Application|RedirectResponse|Redirector
-     * @throws Throwable
      */
-    public function destroy(int $id)
+    public function destroy(int $id, Request $request)
     {
-        Tag::findOrFail($id)->delete();
+        /** @var Tag $tag */
+        $tag = Tag::withTrashed()->findOrFail($id);
+
+        if ($request->input('permanently')) {
+            $tag->posts()->detach($tag->posts()->allRelatedIds()->all());
+            $tag->forceDelete();
+        } elseif ($tag->trashed()) {
+            $tag->restore();
+        } else {
+            $tag->delete();
+        }
+
         return redirect(route('admin.tags.index'));
     }
 }

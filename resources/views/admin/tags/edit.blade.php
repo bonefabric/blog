@@ -5,7 +5,7 @@
 @endsection
 
 @section('body')
-    <p>Edit tag</p>
+    <p class="fw-bold pt-2">Edit tag</p>
     <form action="{{ route('admin.tags.update', $tag->id) }}" method="post">
         @csrf
         @method('PATCH')
@@ -16,6 +16,15 @@
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
     @if($errors->any())
-        {{ $errors }}
+        <div class="row mt-5">
+            <div class="col-8 offset-2">
+                @foreach($errors->all() as $error)
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ $error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endforeach
+            </div>
+        </div>
     @endif
 @endsection

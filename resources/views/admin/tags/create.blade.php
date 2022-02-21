@@ -5,7 +5,7 @@
 @endsection
 
 @section('body')
-    <p>Create new tag</p>
+    <p class="fw-bold pt-2">Create new tag</p>
     <form action="{{ route('admin.tags.store') }}" method="post">
         @csrf
         <div class="mb-3">
@@ -14,5 +14,16 @@
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
-    {{ $errors }}
+    @if($errors->any())
+        <div class="row mt-5">
+            <div class="col-8 offset-2">
+                @foreach($errors->all() as $error)
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ $error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 @endsection
