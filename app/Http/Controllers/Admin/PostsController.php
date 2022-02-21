@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
@@ -10,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class PostsController extends AdminController
@@ -21,7 +24,11 @@ class PostsController extends AdminController
     public function index()
     {
         return view('admin.posts.index')
-            ->with('posts', Post::all(['id', 'name'])->sortDesc());
+            ->with('posts', Post::select(['id', 'name', 'deleted_at'])
+                ->withTrashed()
+                ->orderBy('deleted_at')
+                ->orderBy('updated_at', 'desc')
+                ->get());
     }
 
     /**
@@ -29,7 +36,7 @@ class PostsController extends AdminController
      */
     public function create()
     {
-        return view('admin.posts.create')->with('tags', Tag::all('id', 'name'));
+        return view('admin.posts.create')->with('tags', Tag::select('id', 'name')->get());
     }
 
     /**
@@ -41,10 +48,21 @@ class PostsController extends AdminController
         $request->validate([
             'name' => ['required', 'min:3', 'max:255', 'string'],
             'content' => ['required', 'max:999999'],
-            'tag' => ['required'],
         ]);
+
+        /** @var Post $post */
         $post = Post::create($request->only('name', 'content'));
-        $post->tags()->attach(Tag::findOrFail($request->input('tag'))->id);
+
+        $tags = $request->collect()
+            ->filter(function ($value, $key) {
+                return str_starts_with($key, 'tag_');
+            })
+            ->keys()
+            ->map(function ($tag) {
+                return (int)ltrim($tag, 'tag_');
+            });
+
+        $post->tags()->attach($tags->all());
         return redirect(route('admin.posts.index'));
     }
 
@@ -79,25 +97,55 @@ class PostsController extends AdminController
         $request->validate([
             'name' => ['required', 'min:3', 'max:255', 'string'],
             'content' => ['required', 'max:999999'],
-            'tag' => ['required'],
         ]);
         /** @var Post $post */
         $post = Post::findOrFail($id);
         $post->updateOrFail($request->only(['name', 'content']));
-        $tag = Tag::findOrFail($request->input('tag'));
-        if (!$post->tags()->allRelatedIds()->contains($tag->id)) {
-            $post->tags()->attach($tag);
-        }
+
+        $tags = $request->collect()
+            ->filter(function ($value, $key) {
+                return str_starts_with($key, 'tag_');
+            })
+            ->keys()
+            ->map(function ($tag) {
+                return (int)ltrim($tag, 'tag_');
+            });
+
+        DB::transaction(function () use ($post, $tags) {
+
+            $post->tags()->detach($post->tags()
+                ->allRelatedIds()
+                ->filter(function ($tag) use ($tags) {
+                    return !$tags->contains($tag);
+                }));
+
+            $post->tags()->attach($tags->filter(function ($value) use ($post) {
+                return !$post->tags()->allRelatedIds()->contains($value);
+            }));
+        });
+
         return redirect(route('admin.posts.show', $post->id));
     }
 
     /**
      * @param int $id
+     * @param Request $request
      * @return Application|RedirectResponse|Redirector
      */
-    public function destroy(int $id)
+    public function destroy(int $id, Request $request)
     {
-        Post::findOrFail($id)->delete();
+        /** @var Post $post */
+        $post = Post::withTrashed()->findOrFail($id);
+
+        if ($request->input('permanently')) {
+            $post->tags()->detach($post->tags()->allRelatedIds()->all());
+            $post->forceDelete();
+        } else if ($post->trashed()) {
+            $post->restore();
+        } else {
+            $post->delete();
+        }
+
         return redirect(route('admin.posts.index'));
     }
 }
