@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Throwable;
 
 class PostsController extends AdminController
 {
@@ -56,6 +57,10 @@ class PostsController extends AdminController
         return view('admin.posts.show')->with('post', Post::findOrFail($id));
     }
 
+    /**
+     * @param int $id
+     * @return Application|Factory|View
+     */
     public function edit(int $id)
     {
         return view('admin.posts.edit')
@@ -63,6 +68,12 @@ class PostsController extends AdminController
             ->with('tags', Tag::all(['id', 'name']));
     }
 
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return Application|RedirectResponse|Redirector
+     * @throws Throwable
+     */
     public function update(Request $request, int $id)
     {
         $request->validate([
