@@ -5,5 +5,5 @@
 @endsection
 
 @section('body')
-    <div class="profile"></div>
+    <div id="profile"></div>
 @endsection
