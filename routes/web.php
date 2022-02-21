@@ -1,14 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\TagsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\User\BlogController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'index')->name('home');
+Route::get('/', [BlogController::class, 'index'])->name('home');
+
+Route::group(['prefix' => 'blog', 'as' => 'blog.'], function () {
+
+    Route::get('post/{id}', [BlogController::class, 'post'])->name('post');
+
+});
 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
