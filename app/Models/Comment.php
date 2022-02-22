@@ -6,7 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne as HasOneAlias;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -19,11 +19,11 @@ class Comment extends Model
     ];
 
     /**
-     * @return HasOneAlias
+     * @return BelongsTo
      */
-    public function user(): HasOneAlias
+    public function user(): BelongsTo
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -41,5 +41,4 @@ class Comment extends Model
     {
         $this->morphMany(__CLASS__, 'commentable');
     }
-
 }

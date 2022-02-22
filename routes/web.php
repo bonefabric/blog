@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\User\BlogController;
+use App\Http\Controllers\User\CommentsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [BlogController::class, 'index'])->name('home');
@@ -16,6 +17,10 @@ Route::get('/', [BlogController::class, 'index'])->name('home');
 Route::group(['prefix' => 'blog', 'as' => 'blog.'], function () {
 
     Route::get('post/{id}', [BlogController::class, 'post'])->name('post');
+
+    Route::get('{source}/{id}/comments', [CommentsController::class, 'index'])->name('comments');
+    Route::get('{source}/{id}/comments/create', [CommentsController::class, 'create'])->name('comments.create');
+    Route::post('{source}/{id}/comments/create', [CommentsController::class, 'store'])->name('comments.store');
 
 });
 

@@ -15,7 +15,8 @@
             <div class="card-body">
                 <h5 class="card-title">{{ $post->name }}</h5>
                 <a href="{{ route('blog.post', $post->id) }}" class="btn btn-primary">Read</a>
-                <a href="#" class="btn btn-primary">Comments</a>
+                <a href="{{ route('blog.comments', ['post', $post->id]) }}"
+                   class="btn btn-primary">Comments{{ $post->comments_count ? ' (' . $post->comments_count . ')' : '' }}</a>
             </div>
         </div>
     @endforeach

@@ -20,6 +20,7 @@ class BlogController extends Controller
     {
         return view('index')->with('posts', Post::select('id', 'name')
             ->with('tags')
+            ->withCount('comments')
             ->get());
     }
 
@@ -29,6 +30,11 @@ class BlogController extends Controller
      */
     public function post(int $id)
     {
-        return view('blog.post')->with('post', Post::findOrFail($id));
+        /** @var Post $post */
+        $post = Post::findOrFail($id);
+        $commentsCount = $post->comments()->count();
+        return view('blog.post')
+            ->with('post', $post)
+            ->with('comments_count', $commentsCount);
     }
 }

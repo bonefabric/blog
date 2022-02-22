@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -71,11 +72,10 @@ class User extends Authenticatable
     }
 
     /**
-     * @return void
+     * @return HasMany
      */
-    public function comments(): void
+    public function comments(): HasMany
     {
-        $this->belongsToMany(Comment::class);
+        return $this->hasMany(Comment::class);
     }
-
 }
