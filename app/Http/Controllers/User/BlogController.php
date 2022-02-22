@@ -19,6 +19,7 @@ class BlogController extends Controller
     public function index()
     {
         return view('index')->with('posts', Post::select('id', 'name')
+            ->with('tags')
             ->get());
     }
 
