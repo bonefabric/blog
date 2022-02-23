@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -51,25 +52,9 @@ class AuthController extends Controller
         return view('register');
     }
 
-    /**
-     * @param Request $request
-     * @return Application|RedirectResponse|Redirector
-     */
-    public function register(Request $request)
+    public function register(Request $request, UserRepository $userRepository)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'confirmed', 'min:6', 'max:100'],
-        ]);
-
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-        ]);
-
-        Auth::login($user);
+        Auth::login($userRepository->createByRequest($request));
         return redirect(route('admin.index'));
     }
 
