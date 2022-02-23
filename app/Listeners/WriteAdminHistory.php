@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use App\Events\Posts\PostCreated;
+use App\Events\Posts\PostDeleted;
+use App\Events\Posts\PostRestored;
+use App\Events\Posts\PostTrashed;
+use App\Events\Posts\PostUpdated;
 use App\Events\Tags\TagCreated;
 use App\Events\Tags\TagDeleted;
 use App\Events\Tags\TagRestored;
@@ -55,6 +60,27 @@ class WriteAdminHistory
         $dispatcher->listen(
             TagUpdated::class,
             [TagsActionsListener::class, 'tagUpdated']
+        );
+
+        $dispatcher->listen(
+            PostCreated::class,
+            [PostsActionsListener::class, 'postCreated']
+        );
+        $dispatcher->listen(
+            PostDeleted::class,
+            [PostsActionsListener::class, 'postDeleted']
+        );
+        $dispatcher->listen(
+            PostRestored::class,
+            [PostsActionsListener::class, 'postRestored']
+        );
+        $dispatcher->listen(
+            PostTrashed::class,
+            [PostsActionsListener::class, 'postTrashed']
+        );
+        $dispatcher->listen(
+            PostUpdated::class,
+            [PostsActionsListener::class, 'postUpdated']
         );
     }
 }

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Posts\PostDeleted;
+use App\Events\Posts\PostRestored;
+use App\Events\Posts\PostTrashed;
+use App\Events\Posts\PostUpdated;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Repositories\PostRepository;
@@ -90,6 +94,7 @@ class PostsController extends AdminController
     public function update(int $id, Request $request, PostRepository $postRepository)
     {
         $postRepository->updateByRequest($post = Post::findOrFail($id), $request);
+        PostUpdated::dispatch($post);
 
         $tags = $request->collect()
             ->filter(function ($value, $key) {
@@ -129,10 +134,13 @@ class PostsController extends AdminController
 
         if ($request->input('permanently')) {
             $postRepository->detachTags($post);
+            PostDeleted::dispatch($post);
             $post->forceDelete();
         } elseif ($post->trashed()) {
+            PostRestored::dispatch($post);
             $post->restore();
         } else {
+            PostTrashed::dispatch($post);
             $post->delete();
         }
 

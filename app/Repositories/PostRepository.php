@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Events\Posts\PostCreated;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Throwable;
@@ -21,7 +22,8 @@ class PostRepository
             'name' => ['required', 'min:3', 'max:255', 'string'],
             'content' => ['required', 'max:999999'],
         ]);
-        return Post::create($request->only('name', 'content'));
+        PostCreated::dispatch($post = Post::create($request->only('name', 'content')));
+        return $post;
     }
 
     /**
