@@ -114,7 +114,7 @@ class PostsController extends AdminController
             })->all());
         });
 
-        return redirect(route('admin.posts.show', $post->id));
+        return redirect(route('admin.posts.show', $id));
     }
 
     /**

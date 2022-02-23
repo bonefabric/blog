@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Tag;
+use App\Repositories\TagRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Throwable;
 
 class TagsController extends AdminController
 {
@@ -38,15 +40,12 @@ class TagsController extends AdminController
 
     /**
      * @param Request $request
+     * @param TagRepository $tagRepository
      * @return Application|RedirectResponse|Redirector
      */
-    public function store(Request $request)
+    public function store(Request $request, TagRepository $tagRepository)
     {
-        $request->validate([
-            'name' => ['required', 'min:3', 'max:100', 'string', 'unique:tags'],
-        ]);
-        $tag = Tag::create($request->only('name'));
-        return redirect(route('admin.tags.show', $tag->id));
+        return redirect(route('admin.tags.show', $tagRepository->createByRequest($request)->id));
     }
 
     /**
@@ -68,33 +67,30 @@ class TagsController extends AdminController
     }
 
     /**
-     * @param Request $request
      * @param int $id
+     * @param Request $request
+     * @param TagRepository $tagRepository
      * @return Application|RedirectResponse|Redirector
+     * @throws Throwable
      */
-    public function update(Request $request, int $id)
+    public function update(int $id, Request $request, TagRepository $tagRepository)
     {
-        $request->validate([
-            'name' => ['required', 'min:3', 'max:100', 'string', 'unique:tags'],
-        ]);
-        $tag = Tag::findOrFail($id);
-        $tag->name = $request->input('name');
-        $tag->save();
-        return redirect(route('admin.tags.show', $tag->id));
+        $tagRepository->updateByRequest(Tag::findOrFail($id), $request);
+        return redirect(route('admin.tags.show', $id));
     }
 
     /**
      * @param int $id
      * @param Request $request
+     * @param TagRepository $tagRepository
      * @return Application|RedirectResponse|Redirector
      */
-    public function destroy(int $id, Request $request)
+    public function destroy(int $id, Request $request, TagRepository $tagRepository)
     {
-        /** @var Tag $tag */
         $tag = Tag::withTrashed()->findOrFail($id);
 
         if ($request->input('permanently')) {
-            $tag->posts()->detach($tag->posts()->allRelatedIds()->all());
+            $tagRepository->detachPosts($tag);
             $tag->forceDelete();
         } elseif ($tag->trashed()) {
             $tag->restore();
