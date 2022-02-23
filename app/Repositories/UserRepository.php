@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Events\UserBanned;
-use App\Events\UserRegistered;
-use App\Events\UserUnbanned;
+use App\Events\User\UserBanned;
+use App\Events\User\UserRegistered;
+use App\Events\User\UserUnbanned;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
