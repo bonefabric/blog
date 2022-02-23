@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Tags\TagDeleted;
+use App\Events\Tags\TagRestored;
+use App\Events\Tags\TagTrashed;
+use App\Events\Tags\TagUpdated;
 use App\Models\Tag;
 use App\Repositories\TagRepository;
 use Illuminate\Contracts\Foundation\Application;
@@ -75,7 +79,8 @@ class TagsController extends AdminController
      */
     public function update(int $id, Request $request, TagRepository $tagRepository)
     {
-        $tagRepository->updateByRequest(Tag::findOrFail($id), $request);
+        $tagRepository->updateByRequest($tag = Tag::findOrFail($id), $request);
+        TagUpdated::dispatch($tag);
         return redirect(route('admin.tags.show', $id));
     }
 
@@ -91,10 +96,13 @@ class TagsController extends AdminController
 
         if ($request->input('permanently')) {
             $tagRepository->detachPosts($tag);
+            TagDeleted::dispatch($tag);
             $tag->forceDelete();
         } elseif ($tag->trashed()) {
+            TagRestored::dispatch($tag);
             $tag->restore();
         } else {
+            TagTrashed::dispatch($tag);
             $tag->delete();
         }
 

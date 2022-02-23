@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Events\Tags\TagCreated;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Throwable;
@@ -20,7 +21,8 @@ class TagRepository
         $request->validate([
             'name' => ['required', 'min:3', 'max:100', 'string', 'unique:tags'],
         ]);
-        return Tag::create($request->only(['name']));
+        TagCreated::dispatch($tag = Tag::create($request->only(['name'])));
+        return $tag;
     }
 
     /**
