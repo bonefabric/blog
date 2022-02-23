@@ -7,7 +7,7 @@ namespace App\Repositories;
 use App\Models\HistoryNote;
 use Illuminate\Support\Facades\Auth;
 
-class HistoryNoteRepository
+class HistoryRepository
 {
 
     /**

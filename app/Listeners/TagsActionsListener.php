@@ -9,20 +9,20 @@ use App\Events\Tags\TagDeleted;
 use App\Events\Tags\TagRestored;
 use App\Events\Tags\TagTrashed;
 use App\Events\Tags\TagUpdated;
-use App\Repositories\HistoryNoteRepository;
+use App\Repositories\HistoryRepository;
 
 class TagsActionsListener
 {
 
     /**
-     * @var HistoryNoteRepository
+     * @var HistoryRepository
      */
     private $historyNoteRepository;
 
     /**
      * @return void
      */
-    public function __construct(HistoryNoteRepository $historyNoteRepository)
+    public function __construct(HistoryRepository $historyNoteRepository)
     {
         $this->historyNoteRepository = $historyNoteRepository;
     }

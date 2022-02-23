@@ -7,17 +7,17 @@ namespace App\Listeners;
 use App\Events\User\UserBanned;
 use App\Events\User\UserRegistered;
 use App\Events\User\UserUnbanned;
-use App\Repositories\HistoryNoteRepository;
+use App\Repositories\HistoryRepository;
 
 class UserActionsListener
 {
 
     /**
-     * @var HistoryNoteRepository
+     * @var HistoryRepository
      */
     private $historyNoteRepository;
 
-    public function __construct(HistoryNoteRepository $historyNoteRepository)
+    public function __construct(HistoryRepository $historyNoteRepository)
     {
         $this->historyNoteRepository = $historyNoteRepository;
     }

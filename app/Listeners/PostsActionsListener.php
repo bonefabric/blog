@@ -9,20 +9,20 @@ use App\Events\Posts\PostDeleted;
 use App\Events\Posts\PostRestored;
 use App\Events\Posts\PostTrashed;
 use App\Events\Posts\PostUpdated;
-use App\Repositories\HistoryNoteRepository;
+use App\Repositories\HistoryRepository;
 
 class PostsActionsListener
 {
 
     /**
-     * @var HistoryNoteRepository
+     * @var HistoryRepository
      */
     private $historyNoteRepository;
 
     /**
      * @return void
      */
-    public function __construct(HistoryNoteRepository $historyNoteRepository)
+    public function __construct(HistoryRepository $historyNoteRepository)
     {
         $this->historyNoteRepository = $historyNoteRepository;
     }
