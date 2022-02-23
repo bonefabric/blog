@@ -6,12 +6,21 @@ namespace App\Listeners;
 
 use App\Events\UserBanned;
 use App\Events\UserUnbanned;
-use App\Models\HistoryNote;
+use App\Repositories\HistoryNoteRepository;
 use Illuminate\Events\Dispatcher;
-use Illuminate\Support\Facades\Auth;
 
 class WriteAdminHistory
 {
+
+    /**
+     * @var HistoryNoteRepository
+     */
+    private $historyNoteRepository;
+
+    public function __construct(HistoryNoteRepository $historyNoteRepository)
+    {
+        $this->historyNoteRepository = $historyNoteRepository;
+    }
 
     /**
      * @param UserBanned $event
@@ -19,14 +28,9 @@ class WriteAdminHistory
      */
     public function userBanned(UserBanned $event): void
     {
-        /** @var HistoryNote $historyNote */
-        $historyNote = HistoryNote::make([
-            'note' => 'User banned. ID: ' . $event->getUser()->id .
-                ', name: ' . $event->getUser()->getAttribute('name') .
-                ', email: ' . $event->getUser()->getAttribute('email'),
-        ]);
-        $historyNote->user_id = Auth::user()->id;
-        $historyNote->save();
+        $this->historyNoteRepository->createNote('User banned. ID: ' . $event->getUser()->id .
+            ', name: ' . $event->getUser()->getAttribute('name') .
+            ', email: ' . $event->getUser()->getAttribute('email'));
     }
 
     /**
@@ -35,14 +39,9 @@ class WriteAdminHistory
      */
     public function userUnbanned(UserUnbanned $event): void
     {
-        /** @var HistoryNote $historyNote */
-        $historyNote = HistoryNote::make([
-            'note' => 'User unbanned. ID: ' . $event->getUser()->id .
-                ', name: ' . $event->getUser()->getAttribute('name') .
-                ', email: ' . $event->getUser()->getAttribute('email'),
-        ]);
-        $historyNote->user_id = Auth::user()->id;
-        $historyNote->save();
+        $this->historyNoteRepository->createNote('User unbanned. ID: ' . $event->getUser()->id .
+            ', name: ' . $event->getUser()->getAttribute('name') .
+            ', email: ' . $event->getUser()->getAttribute('email'));
     }
 
     /**
