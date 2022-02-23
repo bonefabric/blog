@@ -22,9 +22,10 @@ class NotBanned
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->isBanned()) {
+        if (Auth::check() && !is_null($user = Auth::user()) && $user->isBanned()) {
             Auth::logout();
-            return redirect(route('login'))->withErrors((new MessageBag())->add('error', 'You are banned.'));
+            return redirect()->route('login')
+                ->withErrors((new MessageBag())->add('error', 'You are banned.'));
         }
         return $next($request);
     }
