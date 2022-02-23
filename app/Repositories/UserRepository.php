@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Events\UserBanned;
+use App\Events\UserUnbanned;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -36,6 +38,8 @@ class UserRepository
      */
     public function ban(int $id, bool $ban = true): void
     {
-        User::findOrFail($id)->update(['banned' => $ban]);
+        $user = User::findOrFail($id);
+        $user->update(['banned' => $ban]);
+        $ban ? UserBanned::dispatch($user) : UserUnbanned::dispatch($user);
     }
 }
