@@ -29,4 +29,13 @@ class UserRepository
         ]);
     }
 
+    /**
+     * @param int $id
+     * @param bool $ban
+     * @return void
+     */
+    public function ban(int $id, bool $ban = true): void
+    {
+        User::findOrFail($id)->update(['banned' => $ban]);
+    }
 }

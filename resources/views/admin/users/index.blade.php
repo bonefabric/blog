@@ -26,7 +26,7 @@
                     <form action="{{ route('admin.users.ban', $user->id) }}" method="post">
                         @csrf
                         @method('PUT')
-                        <input type="hidden" name="ban" value="{{ $user->banned }}">
+                        <input type="hidden" name="banned" value="{{ $user->banned }}">
                         <button class="btn btn-primary" type="submit">{{ $user->banned ? 'Unban' : 'Ban' }}</button>
                     </form>
                 </td>

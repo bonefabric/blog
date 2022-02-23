@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -27,20 +28,13 @@ class UsersController extends AdminController
     /**
      * @param int $id
      * @param Request $request
+     * @param UserRepository $userRepository
      * @return Application|RedirectResponse|Redirector
      */
-    public function ban(int $id, Request $request)
+    public function ban(int $id, Request $request, UserRepository $userRepository)
     {
-        $request->validate([
-            'ban' => ['required', 'bool'],
-        ]);
-        $user = User::findOrFail($id);
-
-        if ((bool)$request->input('ban') !== $user->banned) {
-            $user->banned = !$user->banned;
-            $user->save();
-        }
-
+        $request->validate(['banned' => ['required', 'bool']]);
+        $userRepository->ban($id, !$request->input('banned'));
         return redirect(route('admin.users'));
     }
 }
