@@ -16,7 +16,7 @@ class CreateHistoryNotesTable extends Migration
         Schema::create('history_notes', function (Blueprint $table) {
             $table->id();
             $table->string('note');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

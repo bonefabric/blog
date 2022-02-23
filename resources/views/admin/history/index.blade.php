@@ -18,7 +18,7 @@
         @foreach($notes as $note)
             <tr>
                 <td>{{ $note->note }}</td>
-                <td>{{ $note->user->name }}</td>
+                <td>{{ $note->user ? $note->user->name : '' }}</td>
                 <td>{{ $note->created_at }}</td>
             </tr>
         @endforeach

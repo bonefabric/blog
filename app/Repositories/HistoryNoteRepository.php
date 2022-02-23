@@ -16,11 +16,11 @@ class HistoryNoteRepository
      */
     public function createNote(string $note): void
     {
-        if (!Auth::check()) {
-            return;
-        }
         $historyNote = HistoryNote::make(['note' => $note]);
-        $historyNote->user_id = Auth::user()->id;
+
+        if (Auth::check() && !is_null($user = Auth::user())) {
+            $historyNote->user_id = $user->id;
+        }
         $historyNote->save();
     }
 }
