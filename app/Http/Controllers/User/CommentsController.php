@@ -7,11 +7,13 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Repositories\CommentRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Redirector;
 use phpDocumentor\Reflection\Types\ClassString;
 
 class CommentsController extends Controller
@@ -51,19 +53,17 @@ class CommentsController extends Controller
             ->with(['source' => $source, 'id' => $id]);
     }
 
-    public function store(string $source, int $id, Request $request)
+    /**
+     * @param string $source
+     * @param int $id
+     * @param Request $request
+     * @param CommentRepository $commentRepository
+     * @return Application|RedirectResponse|Redirector
+     */
+    public function store(string $source, int $id, Request $request, CommentRepository $commentRepository)
     {
         $this->validateSource($source);
-        $request->validate([
-            'comment' => ['required']
-        ]);
-        $comment = new Comment();
-
-        //TODO change method
-        $comment->user_id = Auth::id();
-        $comment->comment = $request->input('comment');
-        $this->commentable[$source]::findOrFail($id)->comments()->save($comment);
-        $comment->save();
+        $commentRepository->createByRequest($request, $this->commentable[$source], $id);
         return redirect(route('blog.comments', [$source, $id]));
     }
 

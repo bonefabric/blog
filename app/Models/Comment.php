@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,16 @@ class Comment extends Model
     protected $fillable = [
         'comment',
     ];
+
+    /**
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope('reviewed', function (Builder $builder) {
+            $builder->where('reviewed', '=', true);
+        });
+    }
 
     /**
      * @return BelongsTo
