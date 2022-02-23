@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\TagsController;
 use App\Http\Controllers\Admin\UsersController;
@@ -40,7 +40,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::group(['middleware' => 'auth.admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
 
-        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/', [DashboardController::class, 'index'])->name('index');
 
         Route::resource('posts', PostsController::class);
         Route::resource('tags', TagsController::class);
