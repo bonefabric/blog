@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Post;
 use App\Models\Tag;
+use App\Repositories\PostRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -41,18 +42,11 @@ class PostsController extends AdminController
 
     /**
      * @param Request $request
+     * @param PostRepository $postRepository
      * @return Application|RedirectResponse|Redirector
      */
-    public function store(Request $request)
+    public function store(Request $request, PostRepository $postRepository)
     {
-        $request->validate([
-            'name' => ['required', 'min:3', 'max:255', 'string'],
-            'content' => ['required', 'max:999999'],
-        ]);
-
-        /** @var Post $post */
-        $post = Post::create($request->only('name', 'content'));
-
         $tags = $request->collect()
             ->filter(function ($value, $key) {
                 return str_starts_with($key, 'tag_');
@@ -62,7 +56,7 @@ class PostsController extends AdminController
                 return (int)ltrim($tag, 'tag_');
             });
 
-        $post->tags()->attach($tags->all());
+        $postRepository->attachTags($postRepository->createByRequest($request), $tags->all());
         return redirect(route('admin.posts.index'));
     }
 
@@ -87,20 +81,15 @@ class PostsController extends AdminController
     }
 
     /**
-     * @param Request $request
      * @param int $id
+     * @param Request $request
+     * @param PostRepository $postRepository
      * @return Application|RedirectResponse|Redirector
      * @throws Throwable
      */
-    public function update(Request $request, int $id)
+    public function update(int $id, Request $request, PostRepository $postRepository)
     {
-        $request->validate([
-            'name' => ['required', 'min:3', 'max:255', 'string'],
-            'content' => ['required', 'max:999999'],
-        ]);
-        /** @var Post $post */
-        $post = Post::findOrFail($id);
-        $post->updateOrFail($request->only(['name', 'content']));
+        $postRepository->updateByRequest($post = Post::findOrFail($id), $request);
 
         $tags = $request->collect()
             ->filter(function ($value, $key) {
@@ -111,17 +100,18 @@ class PostsController extends AdminController
                 return (int)ltrim($tag, 'tag_');
             });
 
-        DB::transaction(function () use ($post, $tags) {
+        DB::transaction(function () use ($post, $tags, $postRepository) {
 
-            $post->tags()->detach($post->tags()
+            $postRepository->detachTags($post, $post->tags()
                 ->allRelatedIds()
                 ->filter(function ($tag) use ($tags) {
                     return !$tags->contains($tag);
-                }));
+                })
+                ->all());
 
-            $post->tags()->attach($tags->filter(function ($value) use ($post) {
+            $postRepository->attachTags($post, $tags->filter(function ($value) use ($post) {
                 return !$post->tags()->allRelatedIds()->contains($value);
-            }));
+            })->all());
         });
 
         return redirect(route('admin.posts.show', $post->id));
@@ -130,15 +120,15 @@ class PostsController extends AdminController
     /**
      * @param int $id
      * @param Request $request
+     * @param PostRepository $postRepository
      * @return Application|RedirectResponse|Redirector
      */
-    public function destroy(int $id, Request $request)
+    public function destroy(int $id, Request $request, PostRepository $postRepository)
     {
-        /** @var Post $post */
         $post = Post::withTrashed()->findOrFail($id);
 
         if ($request->input('permanently')) {
-            $post->tags()->detach($post->tags()->allRelatedIds()->all());
+            $postRepository->detachTags($post);
             $post->forceDelete();
         } elseif ($post->trashed()) {
             $post->restore();
