@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Events\UserBanned;
-use App\Events\UserUnbanned;
 use App\Listeners\WriteAdminHistory;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -23,12 +21,10 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        UserBanned::class => [
-            [WriteAdminHistory::class, 'userBanned'],
-        ],
-        UserUnbanned::class => [
-            [WriteAdminHistory::class, 'userUnbanned'],
-        ]
+    ];
+
+    protected $subscribe = [
+        WriteAdminHistory::class,
     ];
 
     /**

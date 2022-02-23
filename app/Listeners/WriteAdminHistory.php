@@ -7,6 +7,7 @@ namespace App\Listeners;
 use App\Events\UserBanned;
 use App\Events\UserUnbanned;
 use App\Models\HistoryNote;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Auth;
 
 class WriteAdminHistory
@@ -42,5 +43,21 @@ class WriteAdminHistory
         ]);
         $historyNote->user_id = Auth::user()->id;
         $historyNote->save();
+    }
+
+    /**
+     * @param Dispatcher $dispatcher
+     * @return void
+     */
+    public function subscribe(Dispatcher $dispatcher): void
+    {
+        $dispatcher->listen(
+            UserBanned::class,
+            [__CLASS__, 'userBanned']
+        );
+        $dispatcher->listen(
+            UserUnbanned::class,
+            [__CLASS__, 'userUnbanned']
+        );
     }
 }
