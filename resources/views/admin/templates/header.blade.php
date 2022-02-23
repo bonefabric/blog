@@ -27,6 +27,10 @@
                 <a class="nav-link{{ str_starts_with(Route::currentRouteName(), 'admin.tags') ? ' active' : '' }}"
                    href="{{ route('admin.tags.index') }}">Tags</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link{{ str_starts_with(Route::currentRouteName(), 'admin.history') ? ' active' : '' }}"
+                   href="{{ route('admin.history') }}">History</a>
+            </li>
         </ul>
         {{ Auth::check() ? Auth::user()->name : '[username]' }}
     </div>

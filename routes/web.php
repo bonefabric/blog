@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\PostsController;
 use App\Http\Controllers\Admin\TagsController;
 use App\Http\Controllers\Admin\UsersController;
@@ -43,11 +44,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
 
         Route::resource('posts', PostsController::class);
+
         Route::resource('tags', TagsController::class);
 
         Route::get('users', [UsersController::class, 'index'])->name('users');
         Route::put('users/{id}', [UsersController::class, 'ban'])->name('users.ban');
 
+        Route::get('history', [HistoryController::class, 'index'])->name('history');
     });
 
 });
