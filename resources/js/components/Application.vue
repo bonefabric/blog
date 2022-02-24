@@ -3,9 +3,11 @@
 </template>
 
 <script>
-export default {
-    name: "Application"
-}
+import {defineComponent} from "vue";
+
+export default defineComponent({
+    name: "Application",
+})
 </script>
 
 <style scoped>

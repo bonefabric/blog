@@ -7,5 +7,6 @@ import router from "./router";
 import store from "./store";
 
 createApp(Application)
-    .use(router, store)
+    .use(router)
+    .use(store)
     .mount('#app');
