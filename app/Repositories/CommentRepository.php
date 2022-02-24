@@ -31,4 +31,19 @@ class CommentRepository
         $commentable::findOrFail($commentableId)->comments()->save($comment);
         return $comment;
     }
+
+    /**
+     * @param int $id
+     * @return void
+     */
+    public function review(int $id): void
+    {
+        if (!Auth::check()) {
+            abort(403);
+        }
+        $comment = Comment::withoutGlobalScope('reviewed')->findOrFail($id);
+        $comment->reviewed = true;
+        $comment->reviewer_id = Auth::id();
+        $comment->save();
+    }
 }

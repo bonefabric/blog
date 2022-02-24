@@ -24,6 +24,10 @@
                    href="{{ route('admin.posts.index') }}">Posts</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link{{ str_starts_with(Route::currentRouteName(), 'admin.comments') ? ' active' : '' }}"
+                   href="{{ route('admin.comments.index') }}">Comments</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link{{ str_starts_with(Route::currentRouteName(), 'admin.tags') ? ' active' : '' }}"
                    href="{{ route('admin.tags.index') }}">Tags</a>
             </li>

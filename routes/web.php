@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\CommentsController as AdminCommentsController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\PostsController;
@@ -44,6 +45,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
 
         Route::resource('posts', PostsController::class);
+
+        Route::get('comments', [AdminCommentsController::class, 'index'])->name('comments.index');
+        Route::get('comments/{id}', [AdminCommentsController::class, 'show'])->name('comments.show');
+        Route::patch('comments/{id}', [AdminCommentsController::class, 'review'])->name('comments.review');
+        Route::delete('comments/{id}', [AdminCommentsController::class, 'destroy'])->name('comments.destroy');
 
         Route::resource('tags', TagsController::class);
 

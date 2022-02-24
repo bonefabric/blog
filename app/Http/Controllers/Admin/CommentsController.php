@@ -1,85 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Comment;
+use App\Repositories\CommentRepository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class CommentsController extends Controller
+class CommentsController extends AdminController
 {
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
     public function index()
     {
-        //
+        return view('admin.comments.index')
+            ->with('comments', Comment::select()
+                ->withoutGlobalScope('reviewed')
+                ->withTrashed()
+                ->get());
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Application|Factory|View
      */
-    public function create()
+    public function show(int $id)
     {
-        //
+        return view('admin.comments.show')->with('comment', Comment::withoutGlobalScope('reviewed')
+            ->withTrashed()
+            ->findOrFail($id));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function destroy(int $id, Request $request): RedirectResponse
     {
-        //
+        $comment = Comment::withoutGlobalScope('reviewed')->withTrashed()->findOrFail($id);
+
+        if ($request->input('permanently')) {
+            $comment->forceDelete();
+        } elseif ($comment->trashed()) {
+            $comment->restore();
+        } else {
+            $comment->delete();
+        }
+        return redirect()->route('admin.comments.index');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @param CommentRepository $commentRepository
+     * @return RedirectResponse
      */
-    public function show($id)
+    public function review(int $id, CommentRepository $commentRepository): RedirectResponse
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $commentRepository->review($id);
+        return redirect()->route('admin.comments.index');
     }
 }
