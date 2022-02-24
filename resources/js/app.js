@@ -1,10 +1,9 @@
 require('./bootstrap');
-
-import Profile from "./components/Profile";
-
 window.Vue = require('vue').default;
 
-// new Vue({
-//     el: '#profile',
-//     render: h => h(Profile)
-// });
+import Application from "./components/Application";
+
+new Vue({
+    el: '#app',
+    render: h => h(Application)
+});
