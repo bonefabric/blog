@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "esnext",
         "strict": true,
-        "module": "es2015",
+        "module": "esnext",
+        "jsx": "preserve",
         "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "skipLibCheck": true
+        "sourceMap": true,
     },
     "include": [
         "resources/js/**/*"
