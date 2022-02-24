@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Events\Comments\CommentCreated;
+use App\Events\Comments\CommentReviewed;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +31,7 @@ class CommentRepository
         $comment = new Comment(['comment' => $request->input('comment')]);
         $comment->user_id = Auth::id();
         $commentable::findOrFail($commentableId)->comments()->save($comment);
+        CommentCreated::dispatch($comment);
         return $comment;
     }
 
@@ -45,5 +48,6 @@ class CommentRepository
         $comment->reviewed = true;
         $comment->reviewer_id = Auth::id();
         $comment->save();
+        CommentReviewed::dispatch($comment);
     }
 }

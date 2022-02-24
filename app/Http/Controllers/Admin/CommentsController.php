@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Comments\CommentDeleted;
+use App\Events\Comments\CommentRestored;
+use App\Events\Comments\CommentTrashed;
 use App\Models\Comment;
 use App\Repositories\CommentRepository;
 use Illuminate\Contracts\Foundation\Application;
@@ -48,10 +51,13 @@ class CommentsController extends AdminController
         $comment = Comment::withoutGlobalScope('reviewed')->withTrashed()->findOrFail($id);
 
         if ($request->input('permanently')) {
+            CommentDeleted::dispatch($comment);
             $comment->forceDelete();
         } elseif ($comment->trashed()) {
+            CommentRestored::dispatch($comment);
             $comment->restore();
         } else {
+            CommentTrashed::dispatch($comment);
             $comment->delete();
         }
         return redirect()->route('admin.comments.index');

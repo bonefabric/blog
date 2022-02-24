@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use App\Events\Comments\CommentCreated;
+use App\Events\Comments\CommentDeleted;
+use App\Events\Comments\CommentRestored;
+use App\Events\Comments\CommentReviewed;
+use App\Events\Comments\CommentTrashed;
 use App\Events\Posts\PostCreated;
 use App\Events\Posts\PostDeleted;
 use App\Events\Posts\PostRestored;
@@ -81,6 +86,27 @@ class WriteAdminHistory
         $dispatcher->listen(
             PostUpdated::class,
             [PostsActionsListener::class, 'postUpdated']
+        );
+
+        $dispatcher->listen(
+            CommentCreated::class,
+            [CommentsActionsListener::class, 'commentCreated']
+        );
+        $dispatcher->listen(
+            CommentDeleted::class,
+            [CommentsActionsListener::class, 'commentDeleted']
+        );
+        $dispatcher->listen(
+            CommentRestored::class,
+            [CommentsActionsListener::class, 'commentRestored']
+        );
+        $dispatcher->listen(
+            CommentReviewed::class,
+            [CommentsActionsListener::class, 'commentReviewed']
+        );
+        $dispatcher->listen(
+            CommentTrashed::class,
+            [CommentsActionsListener::class, 'commentTrashed']
         );
     }
 }
