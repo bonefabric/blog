@@ -8,6 +8,16 @@ const routes = [
         component: Index,
     },
     {
+        name: 'login',
+        path: '/login',
+        component: () => import("../components/views/Login"),
+    },
+    {
+        name: 'register',
+        path: '/register',
+        component: () => import("../components/views/Register"),
+    },
+    {
         name: 'about',
         path: '/about',
         component: () => import("../components/views/About"),
