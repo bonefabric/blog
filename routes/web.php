@@ -12,9 +12,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\User\BlogController;
 use App\Http\Controllers\User\CommentsController;
+use App\Http\Controllers\VersionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [BlogController::class, 'index'])->name('home');
+
+Route::get('version/new', [VersionController::class, 'newVersion'])->name('new-version');
+Route::get('version/old', [VersionController::class, 'oldVersion'])->name('old-version');
 
 Route::group(['prefix' => 'blog', 'as' => 'blog.'], function () {
 
@@ -26,8 +30,6 @@ Route::group(['prefix' => 'blog', 'as' => 'blog.'], function () {
 
 });
 
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [AuthController::class, 'loginView'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -37,6 +39,8 @@ Route::group(['middleware' => 'guest'], function () {
 });
 
 Route::group(['middleware' => 'auth'], function () {
+
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
@@ -60,3 +64,5 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
 });
+
+Route::fallback([BlogController::class, 'index']);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http;
 
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\NewVersion;
 use App\Http\Middleware\NotBanned;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use phpDocumentor\Reflection\Types\ClassString;
@@ -44,6 +45,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             NotBanned::class,
+            NewVersion::class,
         ],
 
         'api' => [

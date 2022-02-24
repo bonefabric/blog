@@ -17,6 +17,9 @@
         </ul>
         <div class="d-flex">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ route('new-version') }}">(Go to new version)</a>
+                </li>
                 @auth
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle{{ Route::current()->named('profile') ? ' active' : '' }}" href="{{ route('profile') }}"
