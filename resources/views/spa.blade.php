@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-<a href="{{ route('old-version') }}">Old version</a>
 <div id="app"></div>
 <noscript><h1>You browser not supports JavaScript.</h1></noscript>
 <script src="{{ asset('js/app.js') }}"></script>
