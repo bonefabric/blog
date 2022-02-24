@@ -1,5 +1,8 @@
 <template>
-    <h1>Application</h1>
+    Application
+    <router-link :to="{ name: 'index' }">Home</router-link>
+    <router-link :to="{ name: 'about' }">About</router-link>
+    <router-view/>
 </template>
 
 <script>

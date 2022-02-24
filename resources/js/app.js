@@ -1,9 +1,10 @@
 require('./bootstrap');
-window.Vue = require('vue').default;
+import {createApp} from "vue";
 
 import Application from "./components/Application";
 
-new Vue({
-    el: '#app',
-    render: h => h(Application)
-});
+import router from "./router";
+
+createApp(Application)
+    .use(router)
+    .mount('#app');
