@@ -1,44 +1,39 @@
 import axios from "axios";
 import {API_VERSION} from "../config";
 
-interface ProfileInterface {
+export interface ProfileInterface {
+    readonly isAuthorized: boolean,
+    readonly name: string,
+    readonly email: string,
+    readonly isAdmin: boolean,
+    readonly isBanned: boolean,
+}
 
-    getName(): string;
+interface AuthData {
+    readonly email: string,
+    readonly password: string,
+    readonly remember: boolean,
+}
 
-    getEmail(): string;
-
-    isAdmin(): boolean;
-
-    isBanned(): boolean;
+interface AuthResult {
+    readonly status: number
+    readonly profile: ProfileInterface
 }
 
 export class Profile {
 
-    public static async authorize(): Promise<void>
-    {
+    public static async authorize(authData?: AuthData): Promise<AuthResult> {
         await axios.get('sanctum/csrf-cookie');
-        await axios.post('api/login', {
-            email: 'admin4k@admin.com',
-            password: '{{ $error }}',
-            spa: 'spa'
-        });
-    }
-
-    public static async getProfile(): Promise<ProfileInterface> {
-        const response = await axios.get('api/' + API_VERSION + '/getProfile');
+        const result = await axios.post('api/' + API_VERSION + '/login', authData);
         return {
-            getName(): string {
-                return response.data.name;
-            },
-            getEmail(): string {
-                return response.data.email;
-            },
-            isAdmin(): boolean {
-                return response.data.isAdmin;
-            },
-            isBanned(): boolean {
-                return response.data.isBanned;
-            },
-        } as ProfileInterface;
+            status: result.data.meta.status,
+            profile: {
+                isAuthorized: result.data.isAuthorized,
+                name: result.data.name,
+                email: result.data.email,
+                isAdmin: result.data.isAdmin,
+                isBanned: result.data.isBanned,
+            } as ProfileInterface,
+        } as AuthResult
     }
 }
