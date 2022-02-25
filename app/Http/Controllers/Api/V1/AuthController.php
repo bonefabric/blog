@@ -23,19 +23,24 @@ class AuthController extends ApiController
             $this->authorized();
             return;
         }
-        $validator = Validator::make(
-            $request->only(['email', 'password']),
-            [
-                'email' => ['required', 'email'],
-                'password' => ['required'],
-            ]);
-
-        if (!$validator->errors() && Auth::attempt($request->only(['email', 'password']), $request->input('remember', false))) {
-            Session::regenerate();
-            $this->authorized();
-            return;
+        if ($request->has('email') && $request->has('password')) {
+            $validator = Validator::make(
+                $request->only(['email', 'password']),
+                [
+                    'email' => ['required', 'email'],
+                    'password' => ['required'],
+                ]);
+            if ($validator->errors()) {
+                $this->unauthorized($validator->errors()->all());
+                return;
+            }
+            if (Auth::attempt($request->only(['email', 'password']), $request->input('remember', false))) {
+                Session::regenerate();
+                $this->authorized();
+                return;
+            }
         }
-        $this->unauthorized($request->has('email') && $request->has('password') ? $validator->errors()->all() : []);
+        $this->unauthorized(['The provided credentials do not match our records.']);
     }
 
     /**
@@ -62,6 +67,6 @@ class AuthController extends ApiController
      */
     private function unauthorized(array $errors): void
     {
-        $this->sendResponse($errors, 403);
+        $this->sendResponse(['errors' => $errors], 403);
     }
 }
