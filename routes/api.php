@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ProfileController;
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -11,12 +11,15 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::post('/login', [AuthController::class, 'login'])->name('spa-auth');
 
+Route::group(['prefix' => 'v1'], function () {
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('/login', [AuthController::class, 'login']);
 
-    Route::group(['prefix' => 'v1'], function () {
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+
         Route::get('getProfile', [ProfileController::class, 'getProfile']);
     });
 });
+
+
