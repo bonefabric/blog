@@ -4,9 +4,13 @@
 
 <script>
 import {defineComponent} from "vue";
+import {Profile} from "../api/Profile";
 
 export default defineComponent({
     name: "Application",
+    mounted() {
+        Profile.authorize();
+    }
 })
 </script>
 
