@@ -35,7 +35,7 @@ class AuthController extends ApiController
             $this->authorized();
             return;
         }
-        $this->unauthorized($validator->errors()->all());
+        $this->unauthorized($request->has('email') && $request->has('password') ? $validator->errors()->all() : []);
     }
 
     /**

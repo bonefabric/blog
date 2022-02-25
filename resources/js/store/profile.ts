@@ -12,7 +12,7 @@ export default {
     getters: {},
     mutations: {
         setProfile(state: ProfileInterface, profile: ProfileInterface): void {
-            state = profile;
+            state = {...profile};
         },
     },
     actions: {
