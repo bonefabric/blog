@@ -21,14 +21,16 @@ export default {
     },
     actions: {
         async init(context: Store<any>) {
-            const result = await Profile.authorize();
+            const result = await Profile.check();
             if (result.status === 200) {
                 context.commit('setProfile', result.profile);
             }
         },
         async login(context: Store<any>, data: AuthData) {
             const result = await Profile.authorize(data)
-            context.commit('setProfile', result.profile);
+            if (result.status === 200) {
+                context.commit('setProfile', result.profile);
+            }
             return result;
         }
     }

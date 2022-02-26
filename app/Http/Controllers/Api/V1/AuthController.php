@@ -14,6 +14,21 @@ class AuthController extends ApiController
 {
 
     /**
+     * @return void
+     */
+    public function check(): void
+    {
+        if (Auth::check() || (Session::has(['email', 'password']) &&
+                Auth::attempt(
+                    ['email' => Session::get('email'), 'password' => Session::get('password')],
+                    Session::get('remember', false)))
+        ) {
+            $this->authorized();
+        }
+        $this->unauthorized();
+    }
+
+    /**
      * @param Request $request
      * @return void
      */
@@ -23,22 +38,20 @@ class AuthController extends ApiController
             $this->authorized();
             return;
         }
-        if ($request->has('email') && $request->has('password')) {
-            $validator = Validator::make(
-                $request->only(['email', 'password']),
-                [
-                    'email' => ['required', 'email'],
-                    'password' => ['required'],
-                ]);
-            if ($validator->errors()) {
-                $this->unauthorized($validator->errors()->all());
-                return;
-            }
-            if (Auth::attempt($request->only(['email', 'password']), $request->input('remember', false))) {
-                Session::regenerate();
-                $this->authorized();
-                return;
-            }
+        $validator = Validator::make(
+            $request->only(['email', 'password']),
+            [
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ]);
+        if ($validator->errors()->any()) {
+            $this->unauthorized($validator->errors()->all());
+            return;
+        }
+        if (Auth::attempt($request->only(['email', 'password']), $request->input('remember', false))) {
+            session()->put($request->only(['email', 'password', 'remember']));
+            $this->authorized();
+            return;
         }
         $this->unauthorized(['The provided credentials do not match our records.']);
     }
@@ -50,11 +63,13 @@ class AuthController extends ApiController
     {
         if (Auth::check() && !is_null($user = Auth::user())) {
             $this->sendResponse([
-                'isAuthorized' => true,
-                'name' => $user->getAttribute('name'),
-                'email' => $user->getAttribute('email'),
-                'isAdmin' => $user->isAdmin(),
-                'isBanned' => $user->isBanned(),
+                'profile' => [
+                    'isAuthorized' => true,
+                    'name' => $user->getAttribute('name'),
+                    'email' => $user->getAttribute('email'),
+                    'isAdmin' => $user->isAdmin(),
+                    'isBanned' => $user->isBanned(),
+                ]
             ]);
             return;
         }
@@ -65,7 +80,7 @@ class AuthController extends ApiController
      * @param array $errors
      * @return void
      */
-    private function unauthorized(array $errors): void
+    private function unauthorized(array $errors = []): void
     {
         $this->sendResponse(['errors' => $errors], 403);
     }

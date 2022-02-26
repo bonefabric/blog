@@ -17,7 +17,7 @@ export default defineComponent({
         this.$store.dispatch('init').finally(() => {
             this.loading = false;
             if (!this.$store.state.profile.isAuthorized) {
-                this.$router.push({ name: 'login' });
+                this.$router.push({name: 'login'});
             }
         });
     }

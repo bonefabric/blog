@@ -56,7 +56,13 @@ export default {
                 password: this.password,
                 remember: this.remember,
             })
-                .then(result => this.errors = result.errors)
+                .then(result => {
+                    if (this.$store.state.profile.isAuthorized) {
+                        this.$router.push({ name: 'index' });
+                        return;
+                    }
+                    this.errors = result.errors;
+                })
                 .finally(() => this.loading = false);
         }
     }
