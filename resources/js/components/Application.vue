@@ -16,8 +16,9 @@ export default defineComponent({
     beforeMount() {
         this.$store.dispatch('init').finally(() => {
             this.loading = false;
-            if (!this.$store.state.profile.isAuthorized) {
-                this.$router.push({name: 'login'});
+            const accessedTo = this.$router.checkAccess(this.$route);
+            if (accessedTo) {
+                this.$router.push(accessedTo);
             }
         });
     }

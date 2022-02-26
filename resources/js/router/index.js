@@ -45,35 +45,38 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    if (store.state.profile.isAuthorized && store.state.profile.isBanned) {
-        return false;
+    const accessedTo = router.checkAccess(to);
+    if (accessedTo) {
+        next(accessedTo);
+        return;
     }
+    next();
+});
 
-    switch (to.meta.access) {
+router.checkAccess = function (route) {
+    switch (route.meta.access) {
         case AUTH.ALL:
-            next();
-            break;
+            return null;
         case AUTH.GUEST:
             if (store.state.profile.isAuthorized) {
-                return false;
+                return {name: 'index'};
             }
-            next();
-            break;
+            return null;
         case AUTH.USER:
             if (!store.state.profile.isAuthorized) {
-                return false;
+                return {name: 'login'};
+            } else if (store.state.profile.isAuthorized && store.state.profile.isBanned) {
+                return {name: 'index'};
             }
-            next();
-            break;
+            return null;
         case AUTH.ADMIN:
             if (!store.state.profile.isAuthorized || !store.state.profile.isAdmin) {
-                return false;
+                return {name: 'index'};
             }
-            next();
-            break;
+            return null;
         default:
-            return false;
+            return {name: 'index'};
     }
-})
+};
 
 export default router;

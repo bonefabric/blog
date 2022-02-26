@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\ApiController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends ApiController
@@ -19,11 +18,7 @@ class AuthController extends ApiController
      */
     public function check(): JsonResponse
     {
-        if (Auth::check() || (Session::has(['email', 'password']) &&
-                Auth::attempt(
-                    ['email' => Session::get('email'), 'password' => Session::get('password')],
-                    Session::get('remember', false)))
-        ) {
+        if (Auth::check()) {
             return $this->authorized();
         }
         return $this->unauthorized();
@@ -48,7 +43,7 @@ class AuthController extends ApiController
             return $this->unauthorized($validator->errors()->all());
         }
         if (Auth::attempt($request->only(['email', 'password']), $request->input('remember', false))) {
-            session()->put($request->only(['email', 'password', 'remember']));
+            session()->regenerate();
             return $this->authorized();
         }
         return $this->unauthorized(['The provided credentials do not match our records.']);
