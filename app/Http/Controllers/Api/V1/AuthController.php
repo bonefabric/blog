@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\ApiController;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -14,29 +15,28 @@ class AuthController extends ApiController
 {
 
     /**
-     * @return void
+     * @return JsonResponse
      */
-    public function check(): void
+    public function check(): JsonResponse
     {
         if (Auth::check() || (Session::has(['email', 'password']) &&
                 Auth::attempt(
                     ['email' => Session::get('email'), 'password' => Session::get('password')],
                     Session::get('remember', false)))
         ) {
-            $this->authorized();
+            return $this->authorized();
         }
-        $this->unauthorized();
+        return $this->unauthorized();
     }
 
     /**
      * @param Request $request
-     * @return void
+     * @return JsonResponse
      */
-    public function login(Request $request): void
+    public function login(Request $request): JsonResponse
     {
         if (Auth::check()) {
-            $this->authorized();
-            return;
+            return $this->authorized();
         }
         $validator = Validator::make(
             $request->only(['email', 'password']),
@@ -45,24 +45,22 @@ class AuthController extends ApiController
                 'password' => ['required'],
             ]);
         if ($validator->errors()->any()) {
-            $this->unauthorized($validator->errors()->all());
-            return;
+            return $this->unauthorized($validator->errors()->all());
         }
         if (Auth::attempt($request->only(['email', 'password']), $request->input('remember', false))) {
             session()->put($request->only(['email', 'password', 'remember']));
-            $this->authorized();
-            return;
+            return $this->authorized();
         }
-        $this->unauthorized(['The provided credentials do not match our records.']);
+        return $this->unauthorized(['The provided credentials do not match our records.']);
     }
 
     /**
-     * @return void
+     * @return JsonResponse
      */
-    private function authorized(): void
+    private function authorized(): JsonResponse
     {
         if (Auth::check() && !is_null($user = Auth::user())) {
-            $this->sendResponse([
+            return $this->sendResponse([
                 'profile' => [
                     'isAuthorized' => true,
                     'name' => $user->getAttribute('name'),
@@ -71,17 +69,16 @@ class AuthController extends ApiController
                     'isBanned' => $user->isBanned(),
                 ]
             ]);
-            return;
         }
-        $this->unauthorized(['The provided credentials do not match our records.']);
+        return $this->unauthorized(['The provided credentials do not match our records.']);
     }
 
     /**
      * @param array $errors
-     * @return void
+     * @return JsonResponse
      */
-    private function unauthorized(array $errors = []): void
+    private function unauthorized(array $errors = []): JsonResponse
     {
-        $this->sendResponse(['errors' => $errors], 403);
+        return $this->sendResponse(['errors' => $errors], 403);
     }
 }

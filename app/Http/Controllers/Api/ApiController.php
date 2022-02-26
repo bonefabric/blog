@@ -23,6 +23,6 @@ class ApiController extends Controller
                     'status' => $status,
                 ],
             ])
-        )->send();
+        );
     }
 }
