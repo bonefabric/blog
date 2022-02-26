@@ -2,14 +2,14 @@ import axios from "axios";
 import {API_VERSION} from "../config";
 
 export interface ProfileInterface {
-    readonly isAuthorized: boolean,
-    readonly name: string,
-    readonly email: string,
-    readonly isAdmin: boolean,
-    readonly isBanned: boolean,
+    isAuthorized: boolean,
+    name: string,
+    email: string,
+    isAdmin: boolean,
+    isBanned: boolean,
 }
 
-interface AuthData {
+export interface AuthData {
     readonly email: string,
     readonly password: string,
     readonly remember: boolean,
