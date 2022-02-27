@@ -29,7 +29,7 @@ onBeforeMount(async () => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #main-preloader {
     z-index: 10000;
     position: fixed;

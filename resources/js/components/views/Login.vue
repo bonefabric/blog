@@ -1,8 +1,14 @@
 <template>
+    <TopMenu/>
     <div class="container">
         <div class="row mt-5">
             <div class="col-6 offset-3">
-                <form @submit.prevent v-if="!loading" class="mb-3">
+                <div v-if="loading" id="login-preloader">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <form @submit.prevent v-else class="mb-3">
                     <div class="mb-3">
                         <label for="inputEmail" class="form-label">Email address</label>
                         <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp"
@@ -24,9 +30,6 @@
                     <router-link :to="{ name: 'register' }">here</router-link>
                     </span>
                 </form>
-                <div v-else>
-                    Loading...
-                </div>
                 <div v-for="error in errors" class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ error }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -40,6 +43,7 @@
 import {ref} from "vue";
 import {store} from "../../store";
 import router from "../../router";
+import TopMenu from "../templates/TopMenu.vue";
 
 const email = ref('');
 const password = ref('');
@@ -49,14 +53,26 @@ const errors = ref([] as string[]);
 
 const login = async () => {
     loading.value = true;
-    await store.dispatch('login', {
+    errors.value = [];
+    const result = await store.dispatch('login', {
         email: email.value,
         password: password.value,
         loading: loading.value,
     });
     if (store.state.profile.isAuthorized) {
         await router.push({name: 'index'});
+    } else {
+        errors.value = result.errors;
     }
     loading.value = false;
 }
 </script>
+
+<style lang="scss" scoped>
+#login-preloader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+</style>

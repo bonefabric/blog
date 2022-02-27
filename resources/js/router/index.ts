@@ -33,6 +33,14 @@ const routes: RouteRecordRaw[] = [
         },
     },
     {
+        name: 'profile',
+        path: '/profile',
+        component: () => import("../components/views/user/Profile"),
+        meta: {
+            access: AUTH.USER,
+        },
+    },
+    {
         name: 'about',
         path: '/about',
         component: () => import("../components/views/About"),
