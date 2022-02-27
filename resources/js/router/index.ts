@@ -49,7 +49,6 @@ const router = createRouter({
 });
 
 export const checkAccess = function (store: Store<StoreState>, route: RouteLocationNormalizedLoaded): RouteLocationRaw | null {
-    console.log(route)
     if (!route.meta.access) {
         return null;
     }

@@ -47,6 +47,10 @@ export const store = createStore<StoreState>({
                 context.commit('setProfile', result.profile);
             }
             return result;
+        },
+        logout(context: ActionContext<StoreState, StoreState>): void {
+            context.commit('clearProfile');
+            Profile.logout().then();
         }
     }
 });

@@ -52,6 +52,15 @@ class AuthController extends ApiController
     /**
      * @return JsonResponse
      */
+    public function logout(): JsonResponse
+    {
+        Auth::logout();
+        return $this->unauthorized();
+    }
+
+    /**
+     * @return JsonResponse
+     */
     private function authorized(): JsonResponse
     {
         if (Auth::check() && !is_null($user = Auth::user())) {

@@ -18,11 +18,20 @@ export class Profile {
 
     public static async check(): Promise<AuthResult> {
         await axios.get('sanctum/csrf-cookie');
-        return this._bindResponse(await axios.post('api/' + API_VERSION + '/auth/check'));
+        return this._bindResponse(await axios.post(this._buildLink('auth/check')));
     }
 
     public static async authorize(authData?: AuthData): Promise<AuthResult> {
-        return this._bindResponse(await axios.post('api/' + API_VERSION + '/auth/login', authData)) as AuthResult;
+        return this._bindResponse(await axios.post(this._buildLink('auth/login'), authData)) as AuthResult;
+    }
+
+    public static async logout(): Promise<void> {
+        await axios.post(this._buildLink('auth/logout'));
+        return;
+    }
+
+    private static _buildLink(link: string): string {
+        return 'api/' + API_VERSION + '/' + link.trim();
     }
 
     private static _bindResponse(response: AxiosResponse): AuthResult {

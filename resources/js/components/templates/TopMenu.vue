@@ -10,18 +10,25 @@
                 </li>
             </ul>
             <div>
-                <a href="version/old">(Go to old version)</a>
+                <a href="{{ 'version/old' }}}">(Go to old version)</a>
+                <a href="#" @click.prevent="logout" class="ms-3">Logout</a>
             </div>
         </div>
     </nav>
 </template>
 
-<script>
-export default {
-    name: "TopMenu"
+<script setup lang="ts">
+import {API_VERSION} from "../../config";
+import {useStore} from "vuex";
+import {key, StoreState} from "../../store";
+import {useRouter} from "vue-router";
+
+const logoutLink = 'api/' + API_VERSION + '/auth/logout';
+const store = useStore<StoreState>(key);
+const router = useRouter();
+
+const logout = () => {
+    store.dispatch('logout');
+    router.push({name: 'login'});
 }
 </script>
-
-<style scoped>
-
-</style>
