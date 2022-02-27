@@ -11,7 +11,7 @@ export interface AuthData {
 export interface AuthResult {
     readonly status: number,
     readonly profile: ProfileInterface,
-    readonly errors: string[],
+    readonly errors: readonly string[],
 }
 
 export class Profile {
@@ -22,7 +22,7 @@ export class Profile {
     }
 
     public static async authorize(authData?: AuthData): Promise<AuthResult> {
-        return this._bindResponse(await axios.post(this._buildLink('auth/login'), authData)) as AuthResult;
+        return this._bindResponse(await axios.post(this._buildLink('auth/login'), authData));
     }
 
     public static async logout(): Promise<void> {
@@ -37,7 +37,7 @@ export class Profile {
     private static _bindResponse(response: AxiosResponse): AuthResult {
         let status: number = 404;
         let profile: ProfileInterface;
-        let errors: string[] = [];
+        let errors: readonly string[] = [];
 
         if (typeof response.data.meta === 'object' && typeof response.data.meta.status === 'number') {
             status = response.data.meta.status;
@@ -50,7 +50,7 @@ export class Profile {
                 email: typeof response.data.profile.email === 'string' ? response.data.profile.email : '',
                 isAdmin: typeof response.data.profile.isAdmin === 'boolean' ? response.data.profile.isAdmin : '',
                 isBanned: typeof response.data.profile.isBanned === 'boolean' ? response.data.profile.isBanned : '',
-            } as ProfileInterface
+            }
         } else {
             profile = {
                 isAuthorized: false,
@@ -58,7 +58,7 @@ export class Profile {
                 email: '',
                 isAdmin: false,
                 isBanned: false,
-            } as ProfileInterface
+            }
         }
 
         if (response.data.errors instanceof Array) {
@@ -67,8 +67,8 @@ export class Profile {
 
         return {
             status: status,
-            profile: profile as ProfileInterface,
+            profile: profile,
             errors: errors,
-        } as AuthResult
+        }
     }
 }
