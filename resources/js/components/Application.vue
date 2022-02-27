@@ -1,6 +1,10 @@
 <template>
     <router-view v-if="!loading"/>
-    <span v-else>Loading...</span>
+    <div id="main-preloader" v-else>
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -24,3 +28,13 @@ onBeforeMount(async () => {
     }
 });
 </script>
+
+<style lang="scss">
+#main-preloader {
+    z-index: 10000;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+</style>
