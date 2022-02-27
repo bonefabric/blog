@@ -21,6 +21,9 @@
                             {{ store.state.profile.name }}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li v-if="store.state.profile.isAdmin">
+                                <router-link class="dropdown-item" :to="{name: 'dashboard'}">Admin panel</router-link>
+                            </li>
                             <li>
                                 <router-link class="dropdown-item" :to="{name: 'profile'}">Profile</router-link>
                             </li>

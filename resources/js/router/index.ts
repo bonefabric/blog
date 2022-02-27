@@ -1,11 +1,13 @@
 import {
     createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized,
-    RouteLocationNormalizedLoaded, RouteLocationRaw, RouteRecordRaw
+    RouteLocationNormalizedLoaded, RouteLocationRaw, RouteRecordNormalized, RouteRecordRaw
 } from "vue-router";
 import {AUTH} from "../config";
 import Index from "../components/views/Index";
 import {Store} from "vuex";
 import {StoreState} from "../store";
+import {adminRoutes} from "./admin";
+
 
 const routes: RouteRecordRaw[] = [
     {
@@ -48,15 +50,25 @@ const routes: RouteRecordRaw[] = [
             access: AUTH.ALL,
         },
     },
+    {
+        name: 'admin',
+        path: '/admin',
+        component: () => import("../components/views/admin/Admin"),
+        children: adminRoutes,
+        meta: {
+            access: AUTH.ADMIN,
+        },
+    }
 ];
 
 const router = createRouter({
     history: createWebHistory(),
     linkActiveClass: 'active',
+    strict: true,
     routes,
 });
 
-export const checkAccess = function (store: Store<StoreState>, route: RouteLocationNormalizedLoaded): RouteLocationRaw | null {
+export const checkAccess = function (store: Store<StoreState>, route: RouteLocationNormalizedLoaded | RouteRecordNormalized): RouteLocationRaw | null {
     if (!route.meta.access) {
         return null;
     }
@@ -87,11 +99,13 @@ export const checkAccess = function (store: Store<StoreState>, route: RouteLocat
 
 export const initGuard = function (store: Store<StoreState>) {
     router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext): void => {
-        const accessedTo = checkAccess(store, to);
-        if (accessedTo) {
-            next(accessedTo);
-            return;
-        }
+        to.matched.forEach(route => {
+            const accessedTo = checkAccess(store, route);
+            if (accessedTo) {
+                next(accessedTo);
+                return;
+            }
+        })
         next();
     });
 }
