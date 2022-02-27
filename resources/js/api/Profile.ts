@@ -1,13 +1,6 @@
 import axios, {AxiosResponse} from "axios";
 import {API_VERSION} from "../config";
-
-export interface ProfileInterface {
-    isAuthorized: boolean,
-    name: string,
-    email: string,
-    isAdmin: boolean,
-    isBanned: boolean,
-}
+import {ProfileInterface} from "../store/modules/profile";
 
 export interface AuthData {
     readonly email: string,
@@ -15,7 +8,7 @@ export interface AuthData {
     readonly remember: boolean,
 }
 
-interface AuthResult {
+export interface AuthResult {
     readonly status: number,
     readonly profile: ProfileInterface,
     readonly errors: string[],
@@ -44,7 +37,7 @@ export class Profile {
         if (typeof response.data.profile === "object") {
             profile = {
                 isAuthorized: typeof response.data.profile.isAuthorized === 'boolean' ? response.data.profile.isAuthorized : false,
-                name: typeof response.data.profile.isAuthorized === 'string' ? response.data.profile.name : '',
+                name: typeof response.data.profile.name === 'string' ? response.data.profile.name : '',
                 email: typeof response.data.profile.email === 'string' ? response.data.profile.email : '',
                 isAdmin: typeof response.data.profile.isAdmin === 'boolean' ? response.data.profile.isAdmin : '',
                 isBanned: typeof response.data.profile.isBanned === 'boolean' ? response.data.profile.isBanned : '',
