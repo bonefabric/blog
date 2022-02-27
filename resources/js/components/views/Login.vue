@@ -36,35 +36,27 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'Login',
-    data() {
-        return {
-            email: '',
-            password: '',
-            remember: false,
-            loading: false,
-            errors: []
-        }
-    },
-    methods: {
-        async login() {
-            this.loading = true;
-            this.$store.dispatch('login', {
-                email: this.email,
-                password: this.password,
-                remember: this.remember,
-            })
-                .then(result => {
-                    if (this.$store.state.profile.isAuthorized) {
-                        this.$router.push({ name: 'index' });
-                        return;
-                    }
-                    this.errors = result.errors;
-                })
-                .finally(() => this.loading = false);
-        }
+<script setup lang="ts">
+import {ref} from "vue";
+import {store} from "../../store";
+import router from "../../router";
+
+const email = ref('');
+const password = ref('');
+const remember = ref(false);
+const loading = ref(false);
+const errors = ref([] as string[]);
+
+const login = async () => {
+    loading.value = true;
+    await store.dispatch('login', {
+        email: email.value,
+        password: password.value,
+        loading: loading.value,
+    });
+    if (store.state.profile.isAuthorized) {
+        await router.push({name: 'index'});
     }
+    loading.value = false;
 }
 </script>
