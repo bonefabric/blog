@@ -1,11 +1,13 @@
-import {ActionContext, createStore} from "vuex";
+import {ActionContext, createStore, Store} from "vuex";
 import {ProfileInterface} from "./modules/profile";
 import {AuthData, AuthResult, Profile} from "../api/Profile";
+import {InjectionKey} from "vue";
 
-
-interface StoreState {
+export interface StoreState {
     profile: ProfileInterface,
 }
+
+export const key : InjectionKey<Store<StoreState>> = Symbol();
 
 export const store = createStore<StoreState>({
     state: {

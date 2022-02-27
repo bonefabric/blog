@@ -3,28 +3,24 @@
     <span v-else>Loading...</span>
 </template>
 
-<script>
-import {defineComponent} from "vue";
+<script setup lang="ts">
+import {onBeforeMount, ref} from "vue";
+import {key, StoreState} from "../store";
+import {useRoute} from "vue-router";
+import {useStore} from "vuex";
+import router, {checkAccess, initGuard} from "../router";
 
-export default defineComponent({
-    name: "Application",
-    data() {
-        return {
-            loading: true,
-        }
-    },
-    beforeMount() {
-        this.$store.dispatch('init').finally(() => {
-            this.loading = false;
-            const accessedTo = this.$router.checkAccess(this.$route);
-            if (accessedTo) {
-                this.$router.push(accessedTo);
-            }
-        });
+const loading = ref(true);
+const route = useRoute();
+const store = useStore<StoreState>(key);
+
+onBeforeMount(async () => {
+    initGuard(store);
+    await store.dispatch('init');
+    loading.value = false;
+    const accessedRoute = checkAccess(store, route);
+    if (accessedRoute) {
+        await router.push(accessedRoute);
     }
-})
+});
 </script>
-
-<style scoped>
-
-</style>
