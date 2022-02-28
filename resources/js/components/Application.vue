@@ -19,8 +19,8 @@ const route = useRoute();
 const store = useStore<StoreState>(key);
 
 onBeforeMount(async () => {
-    initGuard(store);
     await store.dispatch('init');
+    initGuard(store);
     loading.value = false;
     const accessedRoute = checkAccess(store, route);
     if (accessedRoute) {
