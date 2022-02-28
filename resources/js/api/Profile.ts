@@ -17,7 +17,7 @@ export interface AuthResult {
 export class Profile {
 
     public static async check(): Promise<AuthResult> {
-        await axios.get('sanctum/csrf-cookie');
+        await axios.get('/sanctum/csrf-cookie');
         return this._bindResponse(await axios.post(this._buildLink('auth/check')));
     }
 
@@ -31,7 +31,7 @@ export class Profile {
     }
 
     private static _buildLink(link: string): string {
-        return 'api/' + API_VERSION + '/' + link.trim();
+        return '/api/' + API_VERSION + '/' + link.trim();
     }
 
     private static _bindResponse(response: AxiosResponse): AuthResult {
